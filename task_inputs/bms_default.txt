@@ -1,0 +1,5 @@
+Voltage 0 2 100 100
+Temp 0 3 200 200
+SoC 0 5 500 500
+Balance 0 4 1000 1000
+Logger 0 2 2000 2000
