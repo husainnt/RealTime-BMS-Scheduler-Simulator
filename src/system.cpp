@@ -24,11 +24,11 @@ void *taskWorker(void *arg)
     Task *task = (Task *)arg;
     for (int cycle = 1; cycle <= 5; cycle++)
     {
-        sleep(task->arrival_time * 1000);
+        usleep(task->arrival_time * 1000);
         pthread_mutex_lock(&mutex);
         cout << "\nTask " << task->name << " started | Cycle " << cycle << " | Priority " << task->priority << endl;
         pthread_mutex_unlock(&mutex);
-        sleep(task->execution_time * 1000);
+        usleep(task->execution_time * 1000);
         pthread_mutex_lock(&mutex);
 
         if (task->execution_time <= task->deadline)
