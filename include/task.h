@@ -11,6 +11,7 @@ struct Task
     int deadline;
     int period;
     int priority;
+    int hit_count;
+    int miss_count;
 };
-
 #endif
