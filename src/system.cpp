@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <algorithm>
-#include <cstring> // for strlen
+#include <cstring>
 #include "../include/task.h"
 using namespace std;
 
@@ -32,7 +32,7 @@ void *taskWorker(void *arg)
         cout << "\nTask " << task->name << " started | Cycle " << cycle << " | Priority " << task->priority << endl;
         pthread_mutex_unlock(&mutex);
 
-        // bonus: pipe communication between voltage and logger
+        // Inter-Task-Comm
         if (task->name == "Voltage")
         {
             const char *alert = "High Voltage Warning!";
@@ -114,7 +114,7 @@ int main()
     cout << "EV Battery Management Scheduler\n";
     pthread_mutex_init(&mutex, NULL);
 
-    // creating the pipe for bonus marks
+    // creating pipe
     int comm_pipe[2];
     if (pipe(comm_pipe) == -1)
     {
@@ -156,7 +156,6 @@ int main()
         cout << task.name << " | Hits: " << task.hit_count << " | Misses: " << task.miss_count << endl;
     }
 
-    // cleaning up resources
     close(comm_pipe[0]);
     close(comm_pipe[1]);
     pthread_mutex_destroy(&mutex);
