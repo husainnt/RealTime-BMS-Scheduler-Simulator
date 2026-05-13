@@ -1,6 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 #include <string>
+#include <pthread.h>
 using namespace std;
 
 struct Task
@@ -13,5 +14,6 @@ struct Task
     int priority;
     int hit_count;
     int miss_count;
+    int pipe_fd[2];
 };
 #endif
