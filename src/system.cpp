@@ -28,11 +28,13 @@ void *taskWorker(void *arg)
     for (int cycle = 1; cycle <= 5; cycle++)
     {
         usleep(task->arrival_time * 1000);
+
         pthread_mutex_lock(&mutex);
         cout << "\nTask " << task->name << " started | Cycle " << cycle << " | Priority " << task->priority << endl;
         pthread_mutex_unlock(&mutex);
 
-        // Inter-Task-Comm
+        // Inter-Task Communication (Pipes)
+        // Inter-Task Communication (Pipes)
         if (task->name == "Voltage")
         {
             const char *alert = "High Voltage Warning!";
@@ -40,11 +42,19 @@ void *taskWorker(void *arg)
         }
         else if (task->name == "Logger")
         {
-            char buffer[100];
-            read(task->pipe_fd[0], buffer, sizeof(buffer));
-            pthread_mutex_lock(&mutex);
-            cout << "Logger Task received pipe message: " << buffer << endl;
-            pthread_mutex_unlock(&mutex);
+            // STUDENT-LEVEL FIX:
+            // Voltage only runs 5 cycles (completing around 500ms).
+            // Logger runs every 2000ms. By Cycle 3 (4000ms), Voltage is dead.
+            // We restrict reading to Cycle 1 and 2 when data is guaranteed to exist.
+            if (cycle <= 2)
+            {
+                char buffer[100];
+                read(task->pipe_fd[0], buffer, sizeof(buffer));
+
+                pthread_mutex_lock(&mutex);
+                cout << "Logger Task received pipe message: " << buffer << endl;
+                pthread_mutex_unlock(&mutex);
+            }
         }
 
         usleep(task->execution_time * 1000);
@@ -62,6 +72,7 @@ void *taskWorker(void *arg)
         }
 
         pthread_mutex_unlock(&mutex);
+
         int remaining_time = task->period - task->execution_time;
         if (remaining_time > 0)
         {
