@@ -153,15 +153,21 @@ int main()
     assignRMSPriorities(taskList);
     displayTasks(taskList);
 
-    // hold thread for each task
+    /* i create one thread for every task loaded from the input file
+      so all tasks can execute independently
+   */
     vector<pthread_t> threads(taskList.size());
     for (size_t i = 0; i < taskList.size(); i++)
     {
-        // passing shared pipeline endpoint handles down to every separate task data record
+        /* here i pass the same pipe file descriptors to every task
+           so the required tasks can exchange messages
+        */
         taskList[i].pipe_fd[0] = comm_pipe[0];
         taskList[i].pipe_fd[1] = comm_pipe[1];
 
-        // here i used pthread_create to spin up the independent Linux thread lines
+        /* through pthread_create i start the worker thread and
+          pass the corresponding task structure to it
+       */
         int status = pthread_create(&threads[i], NULL, taskWorker, &taskList[i]);
         if (status != 0)
         {
@@ -169,8 +175,7 @@ int main()
         }
     }
 
-    // barrier tracking synchronization:
-    // the main thread waits here via pthread_join until all worker loops have completed entirely
+    // here the main thread waits until all worker threads have completed their 5 execution cycles
     for (size_t i = 0; i < taskList.size(); i++)
     {
         pthread_join(threads[i], NULL);
